@@ -12,15 +12,18 @@ class Book {
     this.title = title;
     this.author = author;
     this.isbn = isbn;
+    this.createBookElement();
   }
-  getTitle() {
-    return this.title;
-  }
-  getAuthor() {
-    return this.author;
-  }
-  getISBN() {
-    return this.isbn;
+  createBookElement() {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${this.title}</td>
+      <td>${this.author}</td>
+      <td>${this.isbn}</td>
+      <td><a href="#" class="delete-item">X</a></td>
+      `;
+    UIbookList.appendChild(tr);
+    showMessage(`Added '${this.title}'`, 'success');
   }
 }
 
@@ -39,10 +42,8 @@ function addBook(e) {
   if (UItitle.value === '' || UIauthor.value === '' || UIisbn.value === '') {
     showMessage('Please fill all fields', 'error');
   } else {
-    // Create new Book object
+    // Create new Book object and add to table
     book = new Book(UItitle.value, UIauthor.value, UIisbn.value);
-    // Add new book element to table
-    createBookElement(book);
     // Clear input form
     UItitle.value = '';
     UIauthor.value = '';
@@ -51,20 +52,12 @@ function addBook(e) {
   e.preventDefault();
 }
 
-// Create a new book element
-function createBookElement(book) {
-  const tr = document.createElement('tr');
-  tr.innerHTML = `<td>${book.getTitle()}</td><td>${book.getAuthor()}</td><td>${book.getISBN()}</td><td><a href="#" class="delete-item">X</a></td>`;
-  UIbookList.appendChild(tr);
-  showMessage(`Added '${book.getTitle()}'`, 'success');
-}
-
 // Delete book element
 function deleteBook(e) {
   if (e.target.classList.contains('delete-item')) {
     // Get book element
     child = e.target.parentElement.parentElement;
-    const bookName = String(child.firstChild.textContent);
+    const bookName = String(child.firstElementChild.textContent);
     child.remove();
     showMessage(`Deleted '${bookName}'`, 'success');
   }
@@ -74,7 +67,7 @@ function deleteBook(e) {
 function showMessage(msg, type) {
   // Create a div
   const div = document.createElement('div');
-  div.className = type + ' alert';
+  div.className = `alert ${type}`;
   div.textContent = msg;
 
   // Insert div above heading
