@@ -1,4 +1,5 @@
 // Global UI variables
+const UIcontainer = document.querySelector('.container');
 const UIbookForm = document.querySelector('#book-form');
 const UItitle = document.querySelector('#title');
 const UIauthor = document.querySelector('#author');
@@ -27,8 +28,6 @@ class Book {
 loadEventListeners();
 console.log('loaded all event listeners');
 function loadEventListeners() {
-  // // DOM load event
-  // document.addEventListener('DOMContentLoaded', loadAllTasks);
   // Form listener
   UIbookForm.addEventListener('submit', addBook);
   // Delete task
@@ -38,7 +37,7 @@ function loadEventListeners() {
 // Add book
 function addBook(e) {
   if (UItitle.value === '' || UIauthor.value === '' || UIisbn.value === '') {
-    console.log('please fill all fields');
+    showMessage('Please fill all fields', 'error');
   } else {
     // Create new Book object
     book = new Book(UItitle.value, UIauthor.value, UIisbn.value);
@@ -55,18 +54,37 @@ function addBook(e) {
 // Create a new book element
 function createBookElement(book) {
   const tr = document.createElement('tr');
-  tr.innerHTML = `<th>${book.getTitle()}</th><th>${book.getAuthor()}</th><th>${book.getISBN()}</th><th><a href="#" class="delete-item">X</a></th>`;
+  tr.innerHTML = `<td>${book.getTitle()}</td><td>${book.getAuthor()}</td><td>${book.getISBN()}</td><td><a href="#" class="delete-item">X</a></td>`;
   UIbookList.appendChild(tr);
-  console.log(`added '${book.getTitle()}' to table`);
+  showMessage(`Added '${book.getTitle()}'`, 'success');
 }
 
-// Delete book
+// Delete book element
 function deleteBook(e) {
   if (e.target.classList.contains('delete-item')) {
-    // Delete book element
+    // Get book element
     child = e.target.parentElement.parentElement;
     const bookName = String(child.firstChild.textContent);
     child.remove();
-    console.log(`deleted '${bookName}' from table`);
+    showMessage(`Deleted '${bookName}'`, 'success');
   }
+}
+
+// Show message
+function showMessage(msg, type) {
+  // Create a div
+  const div = document.createElement('div');
+  div.className = type + ' alert';
+  div.textContent = msg;
+
+  // Insert div above heading
+  UIcontainer.insertBefore(div, UIbookForm);
+
+  // Clear message after 3 seconds
+  setTimeout(clearMessage, 3000);
+}
+
+// Clear message
+function clearMessage() {
+  document.querySelector('.alert').remove();
 }
